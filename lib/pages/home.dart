@@ -5,8 +5,12 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:food_app/cons.dart';
 import 'package:food_app/food_details.dart';
+import 'package:food_app/pages/profile.dart';
 import 'package:food_app/pages/slider_details.dart';
 import 'package:food_app/size.dart';
+
+import 'cart.dart';
+import 'liked_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,29 +21,69 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int currentPageIndext = 0;
+  List pages = const [HomePage(), LikedPage(), CartPage(), SliderDetails()];
 
   @override
   Widget build(BuildContext context) {
     // print(ResponsiveSize.deviceHeight);
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          child: Column(
-            children: [
-              _buildHeadingTitle(),
-              Expanded(
-                child: ListView(
-                  children: [
-                    _buildPage(),
-                    _builIndicator(),
-                    _buildRecommentTitle(),
-                    _buildRecommendedCard(),
-                  ],
-                ),
-              )
-            ],
-          ),
+        body: Column(
+          children: [
+            _buildHeadingTitle(),
+            Expanded(
+              child: ListView(
+                children: [
+                  _buildPage(),
+                  _builIndicator(),
+                  _buildRecommentTitle(),
+                  _buildRecommendedCard(),
+                ],
+              ),
+            )
+          ],
         ),
+        bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: 0,
+            onTap: (index) {
+              setState(() {
+                if (index == 0) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ));
+                } else if (index == 1) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LikedPage(),
+                      ));
+                } else if (index == 2) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CartPage(),
+                      ));
+                } else {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProfilePage(),
+                      ));
+                }
+              });
+            },
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.favorite), label: 'Liked'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.card_travel), label: 'Cart'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.person), label: 'Profile'),
+            ]),
       ),
     );
   }
@@ -58,8 +102,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildRecommendedCard() {
-    return Container(
-      height: (150 + 14) * 10,
+    return SizedBox(
+      height: (130 + 14) * 10,
       child: ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           itemCount: 10,
@@ -300,7 +344,7 @@ class _HomePageState extends State<HomePage> {
                             image: NetworkImage(
                                 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')),
                         borderRadius: BorderRadius.circular(10)),
-                    height: 160,
+                    height: 120,
                   ),
                   Align(
                     alignment: Alignment.bottomCenter,
