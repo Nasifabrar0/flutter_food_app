@@ -1,16 +1,16 @@
-import 'dart:ui';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:food_app/cons.dart';
 import 'package:food_app/food_details.dart';
+import 'package:food_app/network/network_helper.dart';
 import 'package:food_app/pages/profile.dart';
 import 'package:food_app/pages/slider_details.dart';
-import 'package:food_app/size.dart';
+import 'package:food_app/utils/app_color.dart';
 
 import 'cart.dart';
 import 'liked_page.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,27 +22,43 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentPageIndext = 0;
   List pages = const [HomePage(), LikedPage(), CartPage(), SliderDetails()];
+  List foods = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getFoodData();
+  }
+
+  getFoodData() async {
+    foods = await NetworkHelper().getFoodData();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     // print(ResponsiveSize.deviceHeight);
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: [
-            _buildHeadingTitle(),
-            Expanded(
-              child: ListView(
+        body: foods.isEmpty
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(
                 children: [
-                  _buildPage(),
-                  _builIndicator(),
-                  _buildRecommentTitle(),
-                  _buildRecommendedCard(),
+                  _buildHeadingTitle(),
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        _buildPage(),
+                        _builIndicator(),
+                        _buildRecommentTitle(),
+                        _buildRecommendedCard(),
+                      ],
+                    ),
+                  )
                 ],
               ),
-            )
-          ],
-        ),
         bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             currentIndex: 0,
@@ -103,20 +119,20 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildRecommendedCard() {
     return SizedBox(
-      height: (130 + 14) * 10,
+      height: (132 + 14) * foods.length.toDouble(),
       child: ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: 10,
+          itemCount: foods.length,
           itemBuilder: (context, index) {
             return InkWell(
               onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FoodDetails(),
+                    builder: (context) => const FoodDetails(),
                   )),
               child: Container(
                 margin: const EdgeInsets.all(7),
-                height: 130,
+                height: 132,
                 width: double.infinity,
                 // color: Colors.pink,
                 child: Row(
@@ -134,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(16),
                             image: DecorationImage(
                                 fit: BoxFit.cover,
-                                image: NetworkImage(dummyImage))),
+                                image: NetworkImage(foods[index]['image']))),
                       ),
                     ),
                     Expanded(
@@ -142,94 +158,46 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           margin: const EdgeInsets.symmetric(vertical: 20),
-                          height: 110,
+                          height: 120,
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10)),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Chinese Side ${index + 1}'),
+                              Text(
+                                foods[index]['title'],
+                                style: TextStyle(
+                                    color: AppColor.buttonColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600),
+                              ),
                               Padding(
                                 padding:
-                                    const EdgeInsets.only(top: 8.0, bottom: 16),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Wrap(
-                                      children: List.generate(
-                                        5,
-                                        (index) => const Icon(
-                                          Icons.star,
-                                          size: 12,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    const Text('4.5',
-                                        style: Cons.subHeadingStyle),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    const Text('128 comments',
-                                        style: Cons.subHeadingStyle)
-                                  ],
+                                    const EdgeInsets.only(top: 8.0, bottom: 8),
+                                child: Text(
+                                  'Type: ${foods[index]['type']}',
+                                  style: Cons.subHeadingStyle,
                                 ),
                               ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: const [
-                                      Icon(
-                                        Icons.circle,
-                                        color: Colors.grey,
-                                        size: 12,
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        'Normal',
-                                        style: Cons.subHeadingStyle,
-                                      )
-                                    ],
+                                  Text(
+                                    '\$ ${foods[index]['price']}',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: AppColor.buttonColor,
+                                        fontWeight: FontWeight.bold),
                                   ),
-                                  Row(
-                                    children: const [
-                                      Icon(
-                                        Icons.location_on,
-                                        color: Colors.grey,
-                                        size: 12,
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        '15km',
-                                        style: Cons.subHeadingStyle,
-                                      )
-                                    ],
-                                  ),
-                                  Row(
-                                    children: const [
-                                      Icon(
-                                        Icons.timer,
-                                        color: Colors.grey,
-                                        size: 12,
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        '12min',
-                                        style: Cons.subHeadingStyle,
-                                      )
-                                    ],
+                                  InkWell(
+                                    onTap: () {},
+                                    child: const FaIcon(
+                                      FontAwesomeIcons.basketShopping,
+                                      color: Colors.grey,
+                                      size: 14,
+                                    ),
                                   )
                                 ],
                               )

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_app/cons.dart';
+import 'package:food_app/network/network_helper.dart';
 import 'package:food_app/utils/app_color.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -98,6 +99,11 @@ class _ProfilePageState extends State<ProfilePage> {
             )
           ],
         ),
+        bottomNavigationBar: IconButton(
+            onPressed: () {
+              NetworkHelper().addData();
+            },
+            icon: const Icon(Icons.add)),
       ),
     );
   }
