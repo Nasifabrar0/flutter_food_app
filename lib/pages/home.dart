@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
               onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const FoodDetails(),
+                    builder: (context) => FoodDetails(foodData: foods[index],),
                   )),
               child: Container(
                 margin: const EdgeInsets.all(7),
@@ -257,7 +257,7 @@ class _HomePageState extends State<HomePage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8),
       child: Row(
-        children: [
+        children: const [
           Text(
             'Popular',
             style: TextStyle(fontWeight: FontWeight.bold),

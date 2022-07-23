@@ -15,6 +15,7 @@ class NetworkHelper {
           'image': element['image'],
           'price': element['price'],
           'type': element['type'],
+          'id' : element.id
         });
       }
 
@@ -26,6 +27,18 @@ class NetworkHelper {
     return foods;
   }
 
+  addToFavorite(emailId, foodId) async {
+    await db.collection('food_user').doc(emailId).update({
+      'favorite_food' : FieldValue.arrayUnion([foodId])
+    });
+  }
+
+
+  addToCart(emailId, foodId, quantity) async {
+    await db.collection('food_user').doc(emailId).update({
+      'cart' : FieldValue.arrayUnion([{'id' : foodId, 'quantity' : quantity}])
+    });
+  }
   // addData() async {
   //   await db
   //       .collection('food')

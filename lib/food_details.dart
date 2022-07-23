@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:food_app/cons.dart';
+import 'package:food_app/network/common_func.dart';
+import 'package:food_app/network/network_helper.dart';
 import 'package:food_app/strings.dart';
 
 import 'widget/topbar_icon.dart';
 
 class FoodDetails extends StatefulWidget {
-  const FoodDetails({Key? key}) : super(key: key);
+  const FoodDetails({Key? key, required this.foodData}) : super(key: key);
+
+  final foodData;
 
   @override
   State<FoodDetails> createState() => _FoodDetailsState();
@@ -14,6 +18,12 @@ class FoodDetails extends StatefulWidget {
 class _FoodDetailsState extends State<FoodDetails> {
   int quantity = 1;
 
+@override
+  void initState() {
+    
+    super.initState();
+    print(widget.foodData);
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -39,20 +49,27 @@ class _FoodDetailsState extends State<FoodDetails> {
                 topBarIcon(
                   icon: Icons.favorite,
                   onClick: () {
-                    Navigator.pop(context);
+                    NetworkHelper().addToFavorite('nasif@gmail.com', widget.foodData['id']);
                   },
                 ),
               ],
               flexibleSpace: FlexibleSpaceBar(
-                title: const Text('Chinese Side food'),
-                background: Image.network(
-                  dummyImage,
-                  fit: BoxFit.cover,
+                title: Text(widget.foodData['title']),
+                background: Opacity(
+                  opacity: 0.75,
+                
+                  child: Image.network(
+                    
+                    widget.foodData['image'],
+                    
+                  
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
             SliverToBoxAdapter(
-              child: Text(Strings.description),
+              child: Text(widget.foodData['description']),
             )
           ],
         ),
@@ -103,10 +120,13 @@ class _FoodDetailsState extends State<FoodDetails> {
                 minWidth: double.maxFinite,
                 shape: const StadiumBorder(),
                 color: Colors.grey,
-                onPressed: () {},
-                child: const Text(
-                  '\$18 | Add to cart',
-                  style: TextStyle(color: Colors.white),
+                onPressed: () {
+                  NetworkHelper().addToCart('nasif@gmail.com', widget.foodData['id'], quantity);
+                  CommonFunc().showSnackMsg('Successfully added to cart', context);
+                },
+                child:  Text(
+                  '\$${widget.foodData['price']} | Add to cart',
+                  style: const TextStyle(color: Colors.white),
                 ),
               )
             ],
